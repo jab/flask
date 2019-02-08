@@ -1398,13 +1398,21 @@ def test_custom_converters(app, client):
 
 
 def test_static_files(app, client):
-    rv = client.get('/static/index.html')
-    assert rv.status_code == 200
-    assert rv.data.strip() == b'<h1>Hello World!</h1>'
+    index_url = '/static/index.html'
     with app.test_request_context():
-        assert flask.url_for('static', filename='index.html') == \
-               '/static/index.html'
-    rv.close()
+        assert flask.url_for('static', filename='index.html') == index_url
+
+    def test_index(url=index_url, expect_data=b'<h1>Hello World!</h1>'):
+        rv = client.get(url)
+        assert rv.status_code == 200
+        assert rv.data.strip() == expect_data
+        rv.close()
+
+    test_index()
+    # Should default to index.html when no file is specified.
+    test_index(url='/static/')
+    for i in ('', '/'):
+        test_index(url='/static/subdir' + i, expect_data=b'hi from subdir index')
 
 
 def test_static_url_path():

@@ -730,6 +730,8 @@ def send_from_directory(directory, filename, **options):
     filename = safe_join(directory, filename)
     if not os.path.isabs(filename):
         filename = os.path.join(current_app.root_path, filename)
+    if os.path.isdir(filename):
+        filename = os.path.join(filename, 'index.html')
     try:
         if not os.path.isfile(filename):
             raise NotFound()
@@ -987,7 +989,7 @@ class _PackageBoundObject(object):
         """
         return total_seconds(current_app.send_file_max_age_default)
 
-    def send_static_file(self, filename):
+    def send_static_file(self, filename='index.html'):
         """Function used internally to send static files from the static
         folder to the browser.
 

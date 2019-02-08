@@ -556,12 +556,13 @@ class Flask(_PackageBoundObject):
         # development). Also, Google App Engine stores static files somewhere
         if self.has_static_folder:
             assert bool(static_host) == host_matching, 'Invalid static_host/host_matching combination'
-            self.add_url_rule(
-                self.static_url_path + '/<path:filename>',
-                endpoint='static',
-                host=static_host,
-                view_func=self.send_static_file
-            )
+            for i in ('', '<path:filename>'):
+                self.add_url_rule(
+                    self.static_url_path + '/' + i,
+                    endpoint='static',
+                    host=static_host,
+                    view_func=self.send_static_file
+                )
 
         #: The click command line context for this application.  Commands
         #: registered here show up in the :command:`flask` command once the
